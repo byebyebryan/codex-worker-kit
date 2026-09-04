@@ -1,0 +1,7 @@
+interface:
+  display_name: "Luna Task"
+  short_description: "Delegate a clear bounded task to Luna"
+  default_prompt: "Use $luna-task to define, delegate, and review this clear, reliably verifiable implementation task without creating a goal."
+
+policy:
+  allow_implicit_invocation: false

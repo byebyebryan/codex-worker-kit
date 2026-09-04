@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""Validate the public Codex worker kit without third-party dependencies."""
+
+from __future__ import annotations
+
+import re
+import stat
+import sys
+import tomllib
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SKILLS = (
+    "luna-task",
+    "terra-task",
+    "worker-task",
+    "luna-goal-loop",
+    "terra-goal-loop",
+    "worker-goal-loop",
+)
+EXPECTED_FILES = {
+    "README.md",
+    "LICENSE",
+    "scripts/check",
+    "agents/luna-max.toml",
+    "agents/terra-xhigh.toml",
+}
+for skill in SKILLS:
+    EXPECTED_FILES.update(
+        {
+            f"skills/{skill}/SKILL.md",
+            f"skills/{skill}/agents/openai.yaml",
+        }
+    )
+
+
+def fail(message: str) -> None:
+    print(f"[FAIL] {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def relative(path: Path) -> str:
+    return path.relative_to(ROOT).as_posix()
+
+
+def inventory() -> set[str]:
+    paths: set[str] = set()
+    for path in ROOT.rglob("*"):
+        if ".git" in path.relative_to(ROOT).parts:
+            continue
+        if path.is_file() or path.is_symlink():
+            paths.add(relative(path))
+    return paths
+
+
+def read_required(path: Path, label: str) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError as error:
+        fail(f"could not read {label}: {error}")
+
+
+def check_inventory() -> None:
+    actual = inventory()
+    missing = sorted(EXPECTED_FILES - actual)
+    unexpected = sorted(actual - EXPECTED_FILES)
+    if missing:
+        fail(f"missing files: {', '.join(missing)}")
+    if unexpected:
+        fail(f"unexpected files: {', '.join(unexpected)}")
+
+    for name in sorted(EXPECTED_FILES):
+        path = ROOT / name
+        if path.is_symlink():
+            fail(f"public file must not be a symlink: {name}")
+        if not path.is_file():
+            fail(f"expected regular file is missing: {name}")
+
+    mode = (ROOT / "scripts/check").stat().st_mode
+    if not mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH):
+        fail("scripts/check is not executable")
+
+    print(f"[ok] expected inventory ({len(EXPECTED_FILES)} files)")
+
+
+def check_agents() -> None:
+    required = {
+        "name",
+        "description",
+        "model",
+        "model_reasoning_effort",
+        "developer_instructions",
+    }
+    for path in sorted((ROOT / "agents").glob("*.toml")):
+        name = relative(path)
+        try:
+            data = tomllib.loads(read_required(path, name))
+        except tomllib.TOMLDecodeError as error:
+            fail(f"invalid TOML in {name}: {error}")
+        missing = sorted(required - data.keys())
+        if missing:
+            fail(f"{name} is missing agent fields: {', '.join(missing)}")
+        for field in sorted(required):
+            value = data[field]
+            if not isinstance(value, str) or not value.strip():
+                fail(f"{name} has an empty or non-string {field} field")
+        if data["name"] != path.stem:
+            fail(f"agent name does not match filename: {name}")
+        if data["model_reasoning_effort"] not in {"max", "xhigh"}:
+            fail(f"unsupported reasoning effort in {name}")
+    print("[ok] agent TOML and required fields")
+
+
+def frontmatter(text: str, name: str) -> dict[str, str]:
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        fail(f"{name} does not start with YAML frontmatter")
+    try:
+        end = lines.index("---", 1)
+    except ValueError:
+        fail(f"{name} has an unterminated YAML frontmatter block")
+
+    fields: dict[str, str] = {}
+    for line in lines[1:end]:
+        if not line.strip():
+            continue
+        if ":" not in line or line.startswith((" ", "\t")):
+            fail(f"unsupported frontmatter line in {name}: {line!r}")
+        key, value = line.split(":", 1)
+        if key in fields:
+            fail(f"duplicate frontmatter field in {name}: {key}")
+        fields[key] = value.strip()
+    for key in ("name", "description"):
+        if not fields.get(key):
+            fail(f"{name} frontmatter is missing {key}")
+    return fields
+
+
+def check_skills() -> None:
+    interface_fields = ("display_name", "short_description", "default_prompt")
+    for skill in SKILLS:
+        skill_dir = ROOT / "skills" / skill
+        skill_file = skill_dir / "SKILL.md"
+        fields = frontmatter(read_required(skill_file, relative(skill_file)), skill)
+        if fields["name"] != skill:
+            fail(f"skill frontmatter name does not match directory: {skill}")
+
+        metadata = skill_dir / "agents" / "openai.yaml"
+        metadata_name = relative(metadata)
+        metadata_text = read_required(metadata, metadata_name)
+        if not metadata_text.strip():
+            fail(f"skill metadata is empty: {metadata_name}")
+        if not re.search(r"^interface:\s*$", metadata_text, re.MULTILINE):
+            fail(f"skill metadata has no interface block: {metadata_name}")
+        for field in interface_fields:
+            pattern = rf"^  {re.escape(field)}:\s*\S.*$"
+            if not re.search(pattern, metadata_text, re.MULTILINE):
+                fail(f"skill metadata is missing interface.{field}: {metadata_name}")
+    print(f"[ok] skill frontmatter and metadata ({len(SKILLS)} skills)")
+
+
+def main() -> int:
+    check_inventory()
+    check_agents()
+    check_skills()
+    print("[ok] all checks passed")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

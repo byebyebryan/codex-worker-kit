@@ -1,0 +1,4 @@
+interface:
+  display_name: "Terra Goal Loop"
+  short_description: "Run a judgment-heavy Terra implementation loop"
+  default_prompt: "Use $terra-goal-loop to assess readiness and implement this judgment-heavy checkpoint with the main agent as architect and terra-xhigh as worker."

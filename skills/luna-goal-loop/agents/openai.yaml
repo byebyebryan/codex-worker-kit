@@ -1,0 +1,4 @@
+interface:
+  display_name: "Luna Goal Loop"
+  short_description: "Run a cost-efficient Luna implementation loop"
+  default_prompt: "Use $luna-goal-loop to assess readiness and implement this reliably verifiable checkpoint with the main agent as architect and luna-max as worker."

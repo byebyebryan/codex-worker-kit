@@ -1,0 +1,7 @@
+interface:
+  display_name: "Worker Goal Loop"
+  short_description: "Cost-aware routing for implementation goals"
+  default_prompt: "Use $worker-goal-loop to assess readiness and route each implementation slice to the cost-effective Luna or Terra worker tier."
+
+policy:
+  allow_implicit_invocation: false

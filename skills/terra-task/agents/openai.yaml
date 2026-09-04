@@ -1,0 +1,7 @@
+interface:
+  display_name: "Terra Task"
+  short_description: "Delegate a judgment-heavy task to Terra"
+  default_prompt: "Use $terra-task to define, delegate, and review this bounded, judgment-heavy implementation task without creating a goal."
+
+policy:
+  allow_implicit_invocation: false
