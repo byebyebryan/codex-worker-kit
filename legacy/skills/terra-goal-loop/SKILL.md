@@ -1,9 +1,13 @@
 ---
 name: terra-goal-loop
-description: Run an architect-worker loop with terra-xhigh for a substantial goal whose settled execution needs broad synthesis, judgment, or consequence management. Use when the user invokes $terra-goal-loop or asks for a goal or checkpoint loop with Terra or terra-xhigh. The main agent assesses readiness and owns product and architecture decisions; avoid trivial or ordinary Luna-suitable work.
+description: Deprecated GPT-5.6 Terra compatibility workflow. Use only when the user explicitly invokes $terra-goal-loop or explicitly requests this legacy Terra workflow. New work should use the Luna or adaptive worker workflows.
 ---
 
 # Terra Goal Loop
+
+Deprecated and excluded from the default installation. This compatibility
+workflow still selects `terra-xhigh` on GPT-5.6 Terra; it never aliases Sol.
+Use the Luna or adaptive worker workflows for new work.
 
 Keep the main agent as architect and reviewer. Assess readiness and plan as
 needed before using `terra-xhigh` for judgment-heavy, cohesive implementation

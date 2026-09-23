@@ -1,7 +1,7 @@
 interface:
   display_name: "Worker Task"
-  short_description: "Cost-aware routing for one bounded task"
-  default_prompt: "Use $worker-task to select the cost-effective worker tier, delegate, and review this bounded implementation task without creating a goal."
+  short_description: "Route a task across Luna and the primary"
+  default_prompt: "Use $worker-task to complete this bounded task with Luna by default, primary handling of difficult portions, and a Sol worker only when separate context helps."
 
 policy:
   allow_implicit_invocation: false

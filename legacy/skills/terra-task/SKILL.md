@@ -1,9 +1,13 @@
 ---
 name: terra-task
-description: Delegate one bounded, judgment-heavy or consequential implementation task to terra-xhigh while the main agent owns the contract and review. Use only when the user explicitly invokes $terra-task. Choose a goal loop for multiple slices and keep unresolved product or architecture decisions in the main thread.
+description: Deprecated GPT-5.6 Terra compatibility workflow. Use only when the user explicitly invokes $terra-task or explicitly requests this legacy Terra workflow. New work should use the Luna or adaptive worker workflows.
 ---
 
 # Terra Task
+
+Deprecated and excluded from the default installation. This compatibility
+workflow still selects `terra-xhigh` on GPT-5.6 Terra; it never aliases Sol.
+Use the Luna or adaptive worker workflows for new work.
 
 Keep the main agent as planner and reviewer. Delegate one cohesive, judgment-heavy
 implementation slice to `terra-xhigh`, review the result, and accept it after

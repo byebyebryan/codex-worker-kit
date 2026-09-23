@@ -1,87 +1,84 @@
 ---
 name: worker-task
-description: Route one bounded, execution-ready implementation task to luna-max or terra-xhigh using a cost-aware assessment of verification, rework, and consequence. Use only when the user explicitly invokes $worker-task. The main agent owns planning and review; choose a goal loop for multiple slices and keep unresolved decisions in the main thread.
+description: Complete one bounded investigation or implementation task with Luna by default, primary-agent handling of difficult portions, and an optional Sol worker when separate context helps. Use only when the user explicitly invokes $worker-task. The primary owns decisions and review; no goal management.
 ---
 
 # Worker Task
 
-Keep the main agent as planner and reviewer. Select the appropriate worker tier,
-delegate one cohesive implementation slice, and accept it after proportionate
-validation. Do not create, update, complete, or otherwise manage a goal.
+Keep the current primary responsible for decisions, integration, and acceptance;
+the intended setup is Sol XHigh with Luna Max workers. This skill does not change
+the primary model or create or manage a goal.
 
-## Confirm the task fits
+## Define and route the task
 
-1. Inspect the request, applicable repository instructions, current worktree,
-   and enough authoritative context to define the execution boundary.
-2. Use this workflow only when the outcome, architecture, invariants, and
-   acceptance check are settled and one worker can own the complete change as
-   one independently reviewable slice.
-3. Keep all product, architecture, public-contract, destructive, and
-   scope-expanding decisions in the main thread. If one remains unresolved,
-   resolve it with the user before delegation.
-4. If the work requires multiple implementation slices or sustained correction
-   cycles, recommend `$worker-goal-loop` instead. Do not silently broaden this
-   workflow.
+Inspect the request, repository instructions, worktree, and enough authoritative
+context to define the outcome, ownership boundary, and acceptance check. Resolve
+ordinary technical decisions within the user's scope. Ask the user only for a
+missing preference, product choice, or authorization that materially affects
+the work. Start implementation once intended behavior and invariants are settled;
+individual coding steps need not be predetermined.
 
-## Select the worker tier
+Choose the route with the lowest expected total cost of reaching an accepted
+result, including primary context, handoffs, review, and retries:
 
-Start with `luna-max`. Keep Luna when the contract is clear and execution is
-localized, repeatable, mechanical, or high-volume, especially when the result
-has a clear, reliable acceptance check or is inexpensive to review and retry.
+- **Luna by default:** use `luna-max` for a bounded assignment with a clear
+  outcome and practical verification. When facts are missing, delegate tracing,
+  reproduction, a focused investigation, or proposed options before editing.
+- **Primary directly:** keep architecture decisions and deeply coupled reasoning
+  in the primary. Handle a difficult portion there when it already has the
+  necessary context; return settled implementation to Luna when useful. A small
+  remainder may be cheaper to finish directly than to hand off again.
+- **Optional Sol worker:** use `sol-xhigh` for complex, self-contained work only
+  when separate context or independent parallel work has a concrete benefit.
+  Complexity alone does not require another Sol agent. State that benefit.
 
-Choose `terra-xhigh` only when its broader synthesis or judgment is likely to
-reduce enough rework or consequence to justify its material cost premium. Good
-signals include:
+Migrations, concurrency, security, cross-module behavior, file count, or
+unfamiliarity alone do not rule out Luna. Use evidence of an unresolved decision,
+missing verification, or unsuccessful approach to assess the actual difficulty.
+Do not route automatically to Terra or Astra.
 
-- interacting cross-module or cross-runtime behavior;
-- broad or large-context investigation and synthesis;
-- weak, manual, slow, or expensive verification, or costly failure;
-- migrations or state transitions, concurrency, subtle debugging, security,
-  or data-integrity risk; or
-- evidence from a lower-tier pass that the task requires one of these qualities.
+Confirm a selected custom agent is available. If unavailable, disclose it and
+continue in the primary; do not silently select a different paid worker. State
+the chosen route and a brief rationale without asking the user to route it.
 
-Do not choose Terra based only on unfamiliarity, file count, diff size, expected
-duration, or volume. If the evidence is borderline, choose Luna. State the tier
-and a brief concrete rationale in commentary without asking the user to choose
-again.
+## Delegate when useful
 
-Confirm that the selected custom agent is available. If it is unavailable,
-disclose that limitation and use the other tier only when it independently fits
-the task; otherwise stop instead of silently substituting it.
+Give the selected worker a compact, self-contained contract containing:
 
-## Delegate one slice
+- investigation or implementation mode, objective, and observable outcome;
+- owned files or responsibility, with unrelated changes to preserve;
+- invariants, non-goals, and authoritative context to inspect;
+- the acceptance check and proportionate validation; and
+- unresolved decisions or conditions to return to the primary.
 
-Give the selected worker a compact, self-contained execution contract containing:
+An investigation does not authorize implementation edits. Use the named custom
+agent with minimum necessary context; prefer `fork_turns: "none"` when supported.
+Honor the client's role and model selection rules rather than relying on a task
+label. Prefer one cohesive assignment over parallel microtasks. Do not duplicate
+the worker's implementation while it runs.
 
-- the objective and observable outcome;
-- owned files or responsibility boundary;
-- invariants and explicit non-goals;
-- authoritative files or context to inspect;
-- required implementation and focused validation; and
-- decisions or conditions that must return to the main agent.
+## Review and recover
 
-Spawn one worker for the slice. Do not split it into parallel microtasks. While
-it runs, perform only independent read-only or review preparation and do not
-duplicate its implementation.
+Inspect actual findings or diffs and validation evidence. Reuse the worker for
+clarifications and bounded corrections. An ordinary failed test is usually a
+correction. If the same failure repeats without new evidence, or a decision or
+verification gap emerges, have the primary diagnose or take over the difficult
+portion. Do not require an unsuccessful Luna attempt before choosing the primary
+for work already known to need it.
 
-## Review and accept
+Before changing write ownership, obtain the handoff or stop the current writer
+and inspect partial changes. Preserve useful work. A subsequent Sol assignment
+still requires a concrete benefit from separate context or independent work;
+avoid cycling between workers. Return clear remaining work to Luna when useful.
 
-1. Inspect the actual diff and validation evidence. Check the acceptance
-   contract, relevant integration behavior, failure paths, unrelated changes,
-   and test gaps.
-2. Send one bounded correction pass to the same worker when the remaining work
-   stays within the original contract.
-3. If a Luna pass reveals hidden coupling, an ambiguous or expensive acceptance
-   check, high consequence of failure, or another concrete Terra signal, the
-   main agent may transfer the remaining original task to `terra-xhigh` once.
-   Explain the evidence and do not escalate merely because an ordinary defect
-   or test failure needs correction.
-4. If review exposes another substantive slice or repeated correction is
-   needed, stop treating the work as a task and recommend `$worker-goal-loop`.
-5. Run focused validation plus any repository-mandated gate. Run a broader
-   suite only when the change, failure evidence, or repository instructions
-   justify it.
-6. Keep commits, pushes, roadmap updates, live deployment, and other external
-   changes in the main thread and within the user's authorization.
-7. Report the accepted outcome, routing rationale, worker contribution,
-   changed files, validation, remaining risks, and repository state.
+## Finish
+
+Review integration behavior, failure paths, unrelated changes, and test gaps.
+Resolve verification gaps before acceptance, including work done by the primary.
+Run checks appropriate to the assignment and repository-required gates; broaden
+checks only for an unresolved risk. Complete corrections within the original task without
+silently expanding scope or creating a goal.
+
+Keep commits, pushes, deployment, and other external actions within existing
+authorization. Report the outcome, routing rationale, worker and primary
+contributions, validation, remaining uncertainty, and repository state.

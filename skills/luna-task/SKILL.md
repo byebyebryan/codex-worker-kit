@@ -1,68 +1,73 @@
 ---
 name: luna-task
-description: Delegate one clear, bounded, reliably verifiable implementation task to luna-max while the main agent owns the contract and review. Use only when the user explicitly invokes $luna-task. Choose a goal loop for multiple slices and Terra for judgment-heavy execution; keep unresolved product or architecture decisions in the main thread.
+description: Delegate one bounded investigation or implementation task to luna-max while the primary owns decisions and review. Use only when the user explicitly invokes $luna-task. Luna is the only delegated model; difficult portions return to the primary.
 ---
 
 # Luna Task
 
-Keep the main agent as planner and reviewer. Delegate one cohesive implementation
-slice to `luna-max`, review the result, and accept it after proportionate
-validation. Do not create, update, complete, or otherwise manage a goal.
+Use `luna-max` for one cohesive task. Keep the current primary responsible for
+decisions, integration, and acceptance; the intended setup is Sol XHigh. This
+skill does not change the primary model or create or manage a goal.
 
-## Confirm the task fits
+## Define the assignment
 
-1. Inspect the request, applicable repository instructions, current worktree,
-   and enough authoritative context to define the execution boundary.
-2. Use this workflow only when the outcome, architecture, invariants, and
-   acceptance check are settled and one worker can own the complete change as
-   one independently reviewable slice.
-3. Luna is a good fit when execution is localized, repeatable, mechanical, or
-   high-volume and the result has a clear, reliable acceptance check or is
-   inexpensive to review and retry.
-4. The main agent may perform bounded read-only planning to identify files,
-   dependencies, risks, and the acceptance check. Keep all product,
-   architecture, public-contract, destructive, and scope-expanding decisions
-   in the main thread.
-5. If a material product decision remains, resolve it with the user before
-   delegation. If the work requires multiple implementation slices or sustained
-   correction cycles, recommend `$luna-goal-loop`. If inspection instead exposes
-   judgment-heavy, cross-boundary, weakly verified, or consequential execution,
-   report the evidence and recommend `$worker-task` or `$terra-task`. Honor the
-   explicit Luna choice and do not silently substitute another tier.
+Inspect the request, repository instructions, worktree, and enough authoritative
+context to identify the outcome, ownership boundary, and practical acceptance
+check. Delegate useful work without solving every implementation detail first.
 
-## Delegate one slice
+When facts are missing, Luna can trace code, reproduce a failure, investigate a
+bounded question, or propose options. Specify investigation or implementation
+mode. An investigation does not authorize implementation edits.
 
-1. Confirm that `luna-max` is available. If it is unavailable, report the
-   limitation instead of silently substituting another worker.
-2. Give the worker a compact, self-contained execution contract containing:
+Resolve ordinary technical decisions in the primary within the user's scope.
+Ask the user only for a missing preference, product choice, or authorization
+that materially affects the work. Start implementation once its behavior and
+invariants are settled; coding steps need not be predetermined.
 
-   - the objective and observable outcome;
-   - owned files or responsibility boundary;
-   - invariants and explicit non-goals;
-   - authoritative files or context to inspect;
-   - required implementation and focused validation; and
-   - decisions or conditions that must return to the main agent.
+## Delegate
 
-3. Spawn exactly one `luna-max` worker for the slice. Do not split it into
-   parallel microtasks.
-4. While the worker runs, perform only independent read-only or review
-   preparation. Do not duplicate its implementation.
+Confirm `luna-max` is available. If unavailable, report the limitation; do not
+silently substitute another worker or claim delegation occurred.
 
-## Review and accept
+Give one worker a compact, self-contained contract containing:
 
-1. Wait for the worker's handoff, then inspect the actual diff and validation
-   evidence. Check the acceptance contract, relevant integration behavior,
-   failure paths, unrelated changes, and test gaps.
-2. If corrections remain within the original bounded task, send one correction
-   pass to the same worker and review the result. An ordinary defect or failed
-   test is a correction, not evidence that Luna is the wrong tier.
-3. If review exposes another substantive slice, repeated correction, or hidden
-   Terra-suitable risk, stop and return the routing decision to the user rather
-   than silently switching workers.
-4. Run focused validation plus any repository-mandated gate. Run a broader
-   suite only when the change, failure evidence, or repository instructions
-   justify it.
-5. Keep commits, pushes, roadmap updates, live deployment, and other external
-   changes in the main thread and within the user's authorization.
-6. Report the accepted outcome, worker contribution, changed files,
-   validation, remaining risks, and repository state.
+- the mode, objective, and observable outcome;
+- owned files or responsibility, with unrelated changes to preserve;
+- invariants, non-goals, and authoritative context to inspect;
+- the acceptance check and proportionate validation; and
+- unresolved decisions or conditions to return to the primary.
+
+Use the named custom agent and minimum necessary context. Prefer
+`fork_turns: "none"` when supported so the contract is self-contained. Honor the
+client's role and model selection rules; a task label alone does not select Luna.
+Prefer one cohesive assignment over parallel microtasks. Do not duplicate the
+worker's implementation while it runs.
+
+## Review and resolve difficulty
+
+Inspect actual findings or diffs and validation evidence. Reuse the worker for
+clarifications and bounded corrections. An ordinary failed test is usually a
+correction, not a reason to change the plan.
+
+Return an unresolved decision, verification gap, contradictory evidence, or
+repeated failure without new evidence to the primary. Cross-module behavior,
+migrations, concurrency, or file count alone do not disqualify Luna. The primary
+may resolve the difficult portion and return a clearer assignment to Luna, or
+finish the original task directly when another handoff adds no value. Explain
+that takeover. Luna remains the only delegated model; do not introduce a Sol,
+Terra, or Astra worker under this skill.
+
+Before the primary edits worker-owned files, obtain the handoff or stop the
+writer and inspect partial changes. Preserve useful work.
+
+## Finish
+
+Review integration behavior, failure paths, unrelated changes, and test gaps.
+Resolve verification gaps before acceptance, including work done by the primary.
+Run checks appropriate to the assignment and repository-required gates; broaden
+checks only for an unresolved risk. Complete corrections within the original task without
+silently expanding scope or creating a goal.
+
+Keep commits, pushes, deployment, and other external actions within existing
+authorization. Report the outcome, Luna's contribution, any primary takeover,
+validation, remaining uncertainty, and repository state.

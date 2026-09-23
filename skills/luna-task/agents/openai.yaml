@@ -1,7 +1,7 @@
 interface:
   display_name: "Luna Task"
-  short_description: "Delegate a clear bounded task to Luna"
-  default_prompt: "Use $luna-task to define, delegate, and review this clear, reliably verifiable implementation task without creating a goal."
+  short_description: "Delegate a bounded task to Luna"
+  default_prompt: "Use $luna-task to delegate this bounded investigation or implementation to Luna, with the primary resolving difficult portions and reviewing the result."
 
 policy:
   allow_implicit_invocation: false

@@ -1,109 +1,84 @@
 ---
 name: luna-goal-loop
-description: Run a cost-efficient architect-worker loop with luna-max for a substantial goal whose slices are clear and reliably verifiable. Use when the user invokes $luna-goal-loop or asks for a goal or checkpoint loop with Luna or luna-max. The main agent assesses readiness and owns product and architecture decisions; use Terra for judgment-heavy execution.
+description: Run a substantial goal or checkpoint loop with luna-max for bounded investigation and implementation. Use when the user invokes $luna-goal-loop or requests a loop with Luna. The primary owns decisions, difficult portions, and review; Luna is the only delegated model.
 ---
 
 # Luna Goal Loop
 
-Keep the main agent as architect and reviewer. Assess readiness and plan as
-needed before using `luna-max` for clear, independently verifiable implementation
-slices. Luna is the selected execution tier, not additional product or
-architecture authority.
+Keep the current primary responsible for decisions, integration, and acceptance;
+the intended setup is Sol XHigh. Use Luna Max for useful bounded investigation
+and implementation throughout the goal. This skill does not change the primary
+model. Do not start a goal loop implicitly for a trivial task.
 
-Subagents have fixed context and coordination cost. Do not use this loop
-implicitly for a trivial change; honor an explicit user invocation.
+## Establish readiness and the goal
 
-## Assess execution readiness
+Inspect the requested outcome, repository instructions, worktree, authoritative
+design, invariants, and exit gate. Resolve ordinary technical decisions in the
+primary within the user's scope. Ask the user only for a missing preference,
+product choice, or authorization that materially affects the work.
 
-1. Resolve the requested outcome, applicable repository instructions, current
-   worktree state, design authority, and required exit gate.
-2. Classify the request before creating a goal or starting a writer:
+If facts are missing, a bounded Luna investigation can trace code, reproduce a
+failure, or propose options. Specify the question and evidence needed; an
+investigation does not authorize implementation edits. Start an implementation
+writer only when the slice's intended behavior and invariants are settled.
+Individual coding steps need not be predetermined.
 
-   - **Ready**: the desired outcome, architecture and invariants, and exit gate
-     are settled well enough to package an execution slice. Individual coding
-     steps do not need to be predetermined.
-   - **Needs implementation planning**: the product contract is settled, but
-     relevant code paths, dependencies, risks, or slice boundaries are not yet
-     clear.
-   - **Needs product decision**: desired behavior, architecture, scope, or an
-     invariant remains unresolved and materially changes the implementation.
+Confirm `luna-max` is available before delegation. If unavailable, report the
+limitation without substituting another worker or claiming a Luna loop ran.
+When execution is ready and goal tools are available, create the explicitly
+requested goal or continue a matching active goal. Report a conflicting active
+goal instead of replacing it. Do not invent a token budget. If the user has not
+requested a goal, do not create one merely because this skill was discovered.
 
-3. For **Needs implementation planning**, keep synthesis and decisions in the
-   main thread. Inspect the repository and form an execution contract. A
-   bounded read-only evidence-gathering assignment may be delegated to
-   `luna-max`, after confirming it is available, when the assignment is narrow,
-   well-defined, and materially reduces main-agent exploration without requiring
-   an architecture or product decision. Do not start a writer. Reclassify after
-   planning.
-4. For **Needs product decision**, explain the unresolved choice and continue
-   the discussion with the user. Do not create an execution goal or spawn
-   `luna-max`.
-5. Proceed only when the request is **Ready**.
+## Package each assignment
 
-## Establish the execution goal
+Choose the largest cohesive assignment with a practical acceptance check that
+one worker can complete without an unresolved product or architecture decision.
+Bound it by reviewable behavior and responsibility, not a small file count.
+Give the worker a compact, self-contained contract containing:
 
-1. Confirm that the `luna-max` custom agent is available if it was not already
-   used for evidence gathering. If it is unavailable, stop and report that
-   limitation instead of silently substituting a more expensive worker.
-2. When goal tools are available, create the explicitly requested goal or
-   continue it when the active goal matches. Report a conflicting active goal
-   instead of replacing it. Do not invent a token budget.
+- investigation or implementation mode, objective, and observable outcome;
+- owned files or responsibility, with unrelated changes to preserve;
+- invariants, non-goals, and authoritative context to inspect;
+- the acceptance check and proportionate validation; and
+- unresolved decisions or conditions to return to the primary.
 
-## Package an execution slice
+Use the named `luna-max` custom agent and minimum necessary context. Prefer
+`fork_turns: "none"` when supported. Honor the client's role and model selection
+rules; a task label alone does not select Luna. Use one writer by default, reuse
+it for related corrections, and do not duplicate its implementation. Use parallel
+assignments only when independent responsibilities justify their overhead.
 
-Choose the largest cohesive slice that one worker can implement, test, and
-self-review without making a new architecture or product decision. Bound the
-slice by decision authority and independently reviewable behavior, not by a
-small line or file count. Prefer slices with a clear, reliable acceptance check
-or an inexpensive review-and-retry cycle.
+## Review and resolve difficulty
 
-Give the worker a self-contained execution contract with:
+At meaningful boundaries, inspect actual findings or diffs and focused
+validation. Review invariants, integration behavior, failure paths, unrelated
+changes, and test gaps. Send ordinary defects back as bounded corrections.
 
-- objective and observable outcome;
-- owned files or responsibility boundary;
-- invariants and behavior that must remain unchanged;
-- explicit non-goals;
-- authoritative context and files to inspect;
-- required implementation and focused validation;
-- decisions or conditions that must return to the main agent; and
-- a concise handoff containing outcome, changed files, validation, and risks.
+Return an unresolved decision, missing verification, contradictory evidence, or
+repeated failure without new evidence to the primary. Migrations, concurrency,
+security, cross-module behavior, or file count alone do not disqualify Luna.
+The primary may resolve or implement the difficult portion and hand clear
+remaining work back to Luna, or finish the slice directly when another handoff
+adds no value. Explain the takeover and continue the authorized goal; do not
+pause merely to ask the user to select another workflow.
 
-Point to authoritative repository material instead of reproducing long
-conversation history. Pass only the minimum recent thread context needed by
-the client.
-
-## Delegate and supervise
-
-1. Use one `luna-max` writer by default. Do not create several microtasks where
-   one coherent assignment would work.
-2. While the worker runs, perform only independent architectural or read-only
-   work. Do not duplicate its implementation.
-3. Reuse the same worker for clarifications and correction passes when
-   practical so it retains task-local context.
-4. At a meaningful slice boundary, inspect the actual diff and focused test
-   evidence. Review design invariants, integration behavior, failure paths,
-   unrelated changes, and test gaps.
-5. Package substantive corrections for the same worker. Resolve architecture
-   or scope decisions in the main thread before delegating the resulting
-   bounded change.
-6. If a slice reveals judgment-heavy, cross-boundary, weakly verified, or
-   consequential execution, pause, report the evidence, and recommend
-   `$worker-goal-loop` or `$terra-goal-loop`. Do not silently switch tiers
-   inside an explicitly Luna-selected loop.
-7. Start another implementation slice only when required by the goal. Keep
-   write ownership non-overlapping if true parallel work is necessary.
+Before the primary edits worker-owned files, obtain the handoff or stop the
+writer and inspect partial changes. Preserve useful work. Luna remains the only
+delegated model; do not introduce a Sol, Terra, or Astra worker under this skill.
+Reassess the next slice independently so a primary takeover does not displace
+Luna from later suitable work.
 
 ## Close the loop
 
-1. Perform one overall contract-focused review after the implementation slices
-   are integrated.
-2. Delegate resulting implementation fixes to `luna-max`, then review the
-   resulting diff. Avoid repeated full-suite runs during intermediate slices.
-3. Run the repository's complete required gate once the candidate is final.
-4. Keep roadmap status, architecture evidence, and commit or push decisions in
-   the main thread unless the user explicitly delegates them.
-5. Mark the goal complete only when the requested outcome and exit gate are
-   satisfied with no required work remaining. Otherwise follow the goal
-   mechanism's blocking rules and report the concrete limitation.
-6. Report the final outcome, the worker's contribution, validation, remaining
-   risks, and repository state.
+Perform an overall contract review after integration. Complete remaining fixes
+and resolve verification gaps, including in work done by the primary. Run the
+repository's required final gate. Avoid repeated full-suite runs
+unless a change or unresolved risk justifies them. Keep commits, pushes,
+deployment, and roadmap changes within existing authorization.
+
+Mark the goal complete only when the outcome and exit gate are satisfied with
+no required work remaining. Otherwise follow the goal tool's blocking rules;
+do not mark an active goal paused without a user request. Report the outcome,
+Luna and primary contributions, validation, remaining uncertainty, and repository
+state. Include total usage or cost only when the runtime provides it.

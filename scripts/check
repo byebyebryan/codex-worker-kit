@@ -13,24 +13,30 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = (
     "luna-task",
-    "terra-task",
     "worker-task",
     "luna-goal-loop",
-    "terra-goal-loop",
     "worker-goal-loop",
 )
+LEGACY_SKILLS = ("terra-task", "terra-goal-loop")
+AGENTS = {
+    "agents/luna-max.toml": ("gpt-6-luna", "max"),
+    "agents/sol-xhigh.toml": ("gpt-6-sol", "xhigh"),
+    "legacy/agents/terra-xhigh.toml": ("gpt-5.6-terra", "xhigh"),
+}
 EXPECTED_FILES = {
     "README.md",
     "LICENSE",
     "scripts/check",
-    "agents/luna-max.toml",
-    "agents/terra-xhigh.toml",
+    *AGENTS,
 }
-for skill in SKILLS:
+SKILL_PATHS = tuple(f"skills/{skill}" for skill in SKILLS) + tuple(
+    f"legacy/skills/{skill}" for skill in LEGACY_SKILLS
+)
+for skill_path in SKILL_PATHS:
     EXPECTED_FILES.update(
         {
-            f"skills/{skill}/SKILL.md",
-            f"skills/{skill}/agents/openai.yaml",
+            f"{skill_path}/SKILL.md",
+            f"{skill_path}/agents/openai.yaml",
         }
     )
 
@@ -92,7 +98,8 @@ def check_agents() -> None:
         "model_reasoning_effort",
         "developer_instructions",
     }
-    for path in sorted((ROOT / "agents").glob("*.toml")):
+    for agent_path, expected_selection in AGENTS.items():
+        path = ROOT / agent_path
         name = relative(path)
         try:
             data = tomllib.loads(read_required(path, name))
@@ -107,9 +114,10 @@ def check_agents() -> None:
                 fail(f"{name} has an empty or non-string {field} field")
         if data["name"] != path.stem:
             fail(f"agent name does not match filename: {name}")
-        if data["model_reasoning_effort"] not in {"max", "xhigh"}:
-            fail(f"unsupported reasoning effort in {name}")
-    print("[ok] agent TOML and required fields")
+        selection = (data["model"], data["model_reasoning_effort"])
+        if selection != expected_selection:
+            fail(f"model/effort drift in {name}: {selection} != {expected_selection}")
+    print("[ok] agent TOML, required fields, and model/effort selections")
 
 
 def frontmatter(text: str, name: str) -> dict[str, str]:
@@ -139,8 +147,9 @@ def frontmatter(text: str, name: str) -> dict[str, str]:
 
 def check_skills() -> None:
     interface_fields = ("display_name", "short_description", "default_prompt")
-    for skill in SKILLS:
-        skill_dir = ROOT / "skills" / skill
+    for skill_path in SKILL_PATHS:
+        skill_dir = ROOT / skill_path
+        skill = skill_dir.name
         skill_file = skill_dir / "SKILL.md"
         fields = frontmatter(read_required(skill_file, relative(skill_file)), skill)
         if fields["name"] != skill:
@@ -157,7 +166,10 @@ def check_skills() -> None:
             pattern = rf"^  {re.escape(field)}:\s*\S.*$"
             if not re.search(pattern, metadata_text, re.MULTILINE):
                 fail(f"skill metadata is missing interface.{field}: {metadata_name}")
-    print(f"[ok] skill frontmatter and metadata ({len(SKILLS)} skills)")
+    print(
+        f"[ok] skill frontmatter and metadata "
+        f"({len(SKILLS)} default, {len(LEGACY_SKILLS)} legacy skills)"
+    )
 
 
 def main() -> int:
