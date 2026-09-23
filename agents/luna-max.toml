@@ -1,6 +1,6 @@
 name = "luna-max"
 description = "Cost-efficient Luna/Max worker for one clear, bounded, strongly verifiable implementation slice; best for localized, repeatable, or high-volume execution, not for architecture decisions."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "max"
 
 developer_instructions = """
