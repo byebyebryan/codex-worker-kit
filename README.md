@@ -9,9 +9,9 @@ acceptance. Workflows preserve the selected primary model.
 
 | Role | Model | Reasoning | Responsibility |
 | --- | --- | --- | --- |
-| Recommended primary | `gpt-6-sol` | `xhigh` | Decisions, difficult portions, integration, and acceptance |
+| Recommended primary | `gpt-6.1-sol` | `xhigh` | Decisions, difficult portions, integration, and acceptance |
 | Default worker `luna-max` | `gpt-6-luna` | `max` | Bounded investigation and implementation with practical verification |
-| Optional worker `sol-xhigh` | `gpt-6-sol` | `xhigh` | Complex, self-contained work that benefits from separate context or independent execution |
+| Optional worker `sol-xhigh` | `gpt-6.1-sol` | `xhigh` | Complex, self-contained work that benefits from separate context or independent execution |
 
 Luna is the starting choice. Missing facts can become a focused investigation,
 reproducer, or proposed options. The primary resolves difficult decisions and
@@ -67,7 +67,7 @@ source and published pins instead of copying over managed targets.
 Select the primary separately in your client or configuration:
 
 ```toml
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "xhigh"
 ```
 
