@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import stat
 import sys
@@ -28,6 +29,7 @@ EXPECTED_FILES = {
     "README.md",
     "LICENSE",
     "scripts/check",
+    "tests/test_check.py",
     "docs/worker-routing-design.md",
     "docs/worker-routing-study.md",
     *AGENTS,
@@ -148,8 +150,87 @@ def frontmatter(text: str, name: str) -> dict[str, str]:
     return fields
 
 
+def parse_metadata(text: str, name: str) -> dict[str, dict[str, str | bool]]:
+    """Parse the kit's two-level YAML mappings; reject unsupported YAML forms."""
+    if re.search(
+        r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x84\x86-\x9f\ud800-\udfff\ufffe\uffff]",
+        text,
+    ):
+        fail(f"metadata contains a non-printable YAML character: {name}")
+    schema = {
+        "interface": {
+            "display_name": str,
+            "short_description": str,
+            "default_prompt": str,
+        },
+        "policy": {"allow_implicit_invocation": bool},
+    }
+    blocks: dict[str, dict[str, str | bool]] = {}
+    block = ""
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip() or line.lstrip(" ").startswith("#"):
+            continue
+        header = re.fullmatch(r"([a-z_]+):(?: +#.*| *)", line)
+        if header:
+            block = header.group(1)
+            if block not in schema or block in blocks:
+                fail(f"unsupported or duplicate metadata block in {name}:{number}: {block}")
+            blocks[block] = {}
+            continue
+        field = re.fullmatch(r"  ([a-z_]+): +(.+)", line)
+        if not field or not block:
+            fail(f"unsupported metadata line in {name}:{number}: {line!r}")
+        key, raw = field.groups()
+        if key not in schema[block] or key in blocks[block]:
+            fail(f"unsupported or duplicate metadata field in {name}:{number}: {block}.{key}")
+        value: str | bool
+        if schema[block][key] is bool:
+            boolean = re.fullmatch(r"(true|false)(?: +#.*| *)", raw)
+            if not boolean:
+                fail(f"metadata {block}.{key} must be a boolean: {name}:{number}")
+            value = boolean.group(1) == "true"
+        else:
+            quoted = re.fullmatch(
+                r'''("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')(?: +#.*| *)''', raw
+            )
+            if not quoted:
+                fail(f"metadata {block}.{key} must be a quoted string: {name}:{number}")
+            scalar = quoted.group(1)
+            if scalar.startswith('"'):
+                try:
+                    value = json.loads(scalar)
+                    value.encode("utf-8")
+                    for escape in re.findall(r"\\(?:u[0-9a-fA-F]{4}|.)", scalar):
+                        if (
+                            escape.startswith("\\u")
+                            and 0xD800 <= int(escape[2:], 16) <= 0xDFFF
+                        ):
+                            raise ValueError("YAML does not support surrogate escapes")
+                except (ValueError, UnicodeEncodeError) as error:
+                    fail(f"unsupported quoted string in {name}:{number}: {error}")
+            else:
+                value = scalar[1:-1].replace("''", "'")
+            if not value.strip():
+                fail(f"metadata {block}.{key} must not be empty: {name}:{number}")
+        blocks[block][key] = value
+    return blocks
+
+
+def check_metadata(text: str, skill: str, name: str) -> None:
+    data = parse_metadata(text, name)
+    interface = data.get("interface", {})
+    for field in ("display_name", "short_description", "default_prompt"):
+        if field not in interface:
+            fail(f"skill metadata is missing interface.{field}: {name}")
+    prompt = interface["default_prompt"]
+    if not re.search(rf"\${re.escape(skill)}(?![a-z0-9-])", prompt):
+        fail(f"default prompt must name ${skill}: {name}")
+    if skill in EXPLICIT_ADAPTIVE_SKILLS:
+        if data.get("policy", {}).get("allow_implicit_invocation") is not False:
+            fail(f"adaptive skill must disable implicit invocation: {name}")
+
+
 def check_skills() -> None:
-    interface_fields = ("display_name", "short_description", "default_prompt")
     for skill_path in SKILL_PATHS:
         skill_dir = ROOT / skill_path
         skill = skill_dir.name
@@ -160,32 +241,7 @@ def check_skills() -> None:
 
         metadata = skill_dir / "agents" / "openai.yaml"
         metadata_name = relative(metadata)
-        metadata_text = read_required(metadata, metadata_name)
-        if not metadata_text.strip():
-            fail(f"skill metadata is empty: {metadata_name}")
-        if not re.search(r"^interface:\s*$", metadata_text, re.MULTILINE):
-            fail(f"skill metadata has no interface block: {metadata_name}")
-        for field in interface_fields:
-            pattern = rf"^  {re.escape(field)}:\s*\S.*$"
-            if not re.search(pattern, metadata_text, re.MULTILINE):
-                fail(f"skill metadata is missing interface.{field}: {metadata_name}")
-        prompt = re.search(r"^  default_prompt:\s*(.+)$", metadata_text, re.MULTILINE)
-        if not prompt or not re.search(
-            rf"\${re.escape(skill)}(?![a-z0-9-])", prompt.group(1)
-        ):
-            fail(f"default prompt must name ${skill}: {metadata_name}")
-        if skill in EXPLICIT_ADAPTIVE_SKILLS:
-            policy = re.search(
-                r"^policy:\s*\n((?:[ \t].*\n|[ \t]*\n)*)",
-                metadata_text + "\n",
-                re.MULTILINE,
-            )
-            if not policy or not re.search(
-                r"^  allow_implicit_invocation:[ \t]*false[ \t]*(?:#.*)?$",
-                policy.group(1),
-                re.MULTILINE,
-            ):
-                fail(f"adaptive skill must disable implicit invocation: {metadata_name}")
+        check_metadata(read_required(metadata, metadata_name), skill, metadata_name)
     print(
         f"[ok] skill frontmatter and metadata "
         f"({len(SKILLS)} default, {len(LEGACY_SKILLS)} legacy skills)"

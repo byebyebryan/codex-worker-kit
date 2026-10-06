@@ -112,6 +112,11 @@ inventory, agent model/effort selections, skill metadata, and explicit-only
 adaptive invocation policies. It does not prove
 routing quality or runtime model availability.
 
+Run `python3 -B tests/test_check.py` for metadata regression checks. The validator
+accepts the kit's two-level `interface` and `policy` mappings, quoted strings,
+and lowercase booleans. Unsupported YAML forms are rejected; extend the validator
+deliberately before adding other metadata formats or fields.
+
 Review representative behavior as well:
 
 - A specified migration with clear boundaries and useful checks can suit Luna.
