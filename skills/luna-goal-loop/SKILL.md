@@ -1,9 +1,13 @@
 ---
 name: luna-goal-loop
-description: Run a substantial goal or checkpoint loop with luna-max for bounded investigation and implementation. Use when the user invokes $luna-goal-loop or requests a loop with Luna. The primary owns decisions, difficult portions, and review; Luna is the only delegated model.
+description: Use when the user invokes $luna-goal-loop or explicitly requests a loop with Luna. A generic goal loop without a Luna request does not activate this skill. Run a substantial goal with luna-max for bounded investigation and implementation; the primary owns decisions, difficult portions, and review. Luna is the only delegated model.
 ---
 
 # Luna Goal Loop
+
+Activate through `$luna-goal-loop` or an explicit request for a loop with Luna.
+A generic "goal loop" without a Luna request uses the ordinary workflow.
+Discussing or editing this skill does not activate its execution workflow.
 
 Keep the current primary responsible for decisions, integration, and acceptance;
 the intended setup is Sol XHigh. Use Luna Max for useful bounded investigation

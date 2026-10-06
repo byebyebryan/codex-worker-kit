@@ -1,13 +1,17 @@
 ---
 name: worker-goal-loop
-description: Run a substantial goal with Luna by default, primary-agent handling of difficult portions, and optional Sol workers when separate context helps. Use only when the user explicitly invokes $worker-goal-loop. The primary owns decisions, routing, and acceptance.
+description: Use only when the user invokes $worker-goal-loop or explicitly asks to use the worker-goal-loop skill. Run a substantial goal in the primary, selectively delegating clear, verifiable assignments to Luna. Sol workers need an independent execution benefit. A generic goal loop or discussion of the skill does not activate it.
 ---
 
 # Worker Goal Loop
 
+Activate only through `$worker-goal-loop` or an explicit request to use this
+named skill. A generic "goal loop" uses the ordinary workflow; discussing or
+editing this skill does not activate it.
+
 Keep the current primary responsible for decisions, integration, and acceptance;
-the intended setup is Sol XHigh with Luna Max workers. Route each assignment
-independently. This skill does not change the primary model.
+the intended setup is Sol XHigh with selective Luna Max delegation. Route each
+assignment independently. This skill does not change the primary model.
 
 ## Establish readiness and the goal
 
@@ -28,25 +32,32 @@ goal instead of replacing it. Do not invent a token budget.
 
 ## Route each assignment
 
-Choose the route with the lowest expected total cost of reaching an accepted
-result, including primary context, handoffs, review, and retries:
+Keep work in the primary when the benefit of delegation is uncertain. Delegate
+to `luna-max` when the objective, responsibility boundary, and acceptance check
+are clear, and expected savings justify packaging, review, and possible
+corrections. Confidence concerns the assignment and verification; Luna can
+choose implementation details or investigate a well-defined question without
+the primary solving it first.
 
-- **Luna by default:** use `luna-max` for bounded investigation or implementation
-  with a clear outcome and practical verification. Delegate useful work without
-  solving every detail first.
-- **Primary directly:** keep architecture decisions and deeply coupled reasoning
-  in the primary. Resolve or implement difficult portions there when it already
-  has the relevant context, then return settled work to Luna when useful.
-  Finish small remainders directly when another handoff would add overhead.
-- **Optional Sol worker:** use `sol-xhigh` for complex, self-contained work when
-  separate context or independent parallel work has a concrete benefit. State
-  that benefit; complexity alone does not require another Sol agent.
+Keep evolving diagnosis, shared decisions, and difficult portions in the primary.
+If preparing a handoff would do most of the work, or only a small remainder is
+left, finish directly. A substantial specified migration or focused investigation
+can still suit Luna. Complexity labels, file count, or unfamiliarity alone do
+not decide the route. Do not require a failed Luna attempt before using the
+primary, or impose a delegation quota. Reassess each assignment on its own merits.
 
-Migrations, concurrency, security, cross-module behavior, file count, or
-unfamiliarity alone do not rule out Luna. Use evidence of an unresolved decision,
-missing verification, or unsuccessful approach to assess the actual difficulty.
-Do not route automatically to Terra or Astra, and do not require a failed Luna
-attempt before selecting the primary for work already known to need it.
+## Use Sol workers for independent execution
+
+Use `sol-xhigh` only when another execution context has a concrete benefit:
+separable parallel work, an investigation with large intermediate output that
+can be distilled, or an independent review. State that benefit and account for
+handoff and acceptance effort. Difficulty beyond Luna normally stays in the
+primary; another Sol worker is not a stronger model tier.
+
+Separate files may still share decisions. Establish independence before parallel
+writes, and require review findings to point to evidence rather than treating
+another same-model opinion as verification. Invoking this workflow does not by
+itself request parallel execution. Do not route automatically to Terra or Astra.
 
 Confirm a selected custom agent is available. If unavailable, disclose it and
 continue in the primary; do not silently choose a different paid worker. State
@@ -83,8 +94,8 @@ inspect partial changes. Preserve useful work. A subsequent Sol assignment
 still requires a benefit from separate context or independent work; avoid
 cycling between workers. Return clear remaining work to Luna when useful.
 
-Route the next slice independently so a primary or Sol assignment does not
-displace Luna from later suitable work. Continue the authorized goal without
+Reassess the next slice independently; earlier primary or worker use does not
+dictate later routing. Continue the authorized goal without
 pausing merely to ask the user to choose another workflow.
 
 ## Close the loop

@@ -1,26 +1,30 @@
 # Codex Worker Kit
 
-Reusable workers and execution workflows for a Sol XHigh primary with Luna Max
-handling most bounded investigation, implementation, and validation. The primary
-owns product and architecture decisions, difficult portions, review, and
-acceptance. Workflows preserve the selected primary model.
+Reusable workers and execution workflows for a Sol XHigh primary with selective
+Luna Max delegation. The primary owns decisions, integration, review, and
+acceptance. Adaptive workflows keep work in the primary when the benefit of a
+handoff is uncertain. Workflows preserve the selected primary model.
 
 ## Models and responsibilities
 
 | Role | Model | Reasoning | Responsibility |
 | --- | --- | --- | --- |
 | Recommended primary | `gpt-6.1-sol` | `xhigh` | Decisions, difficult portions, integration, and acceptance |
-| Default worker `luna-max` | `gpt-6-luna` | `max` | Bounded investigation and implementation with practical verification |
-| Optional worker `sol-xhigh` | `gpt-6.1-sol` | `xhigh` | Complex, self-contained work that benefits from separate context or independent execution |
+| Cheaper worker `luna-max` | `gpt-6-luna` | `max` | Clear, bounded investigation and implementation with practical verification |
+| Optional worker `sol-xhigh` | `gpt-6.1-sol` | `xhigh` | Separable parallel work, context-isolated investigation, or independent review |
 
-Luna is the starting choice. Missing facts can become a focused investigation,
-reproducer, or proposed options. The primary resolves difficult decisions and
-hands clear implementation back to Luna when useful. It may finish a small
-remainder directly when another handoff adds overhead.
+Delegate to Luna when the objective, responsibility boundary, and acceptance
+check are clear and expected savings justify packaging, review, and possible
+corrections. Confidence concerns the assignment and verification; the primary
+need not solve every implementation detail first. A substantial specified
+migration or focused investigation can qualify. Evolving diagnosis, shared
+decisions, and small remainders often fit primary execution better.
 
-A Sol worker needs a concrete benefit from separate context or independent work.
-Complexity alone does not justify spawning another Sol agent when the primary
-already has the context. Terra and Astra are outside automatic routing.
+A Sol worker needs a concrete benefit from another execution context. Difficulty
+beyond Luna normally stays with the primary; the same-model worker is not a
+stronger tier. Separate files may still depend on shared decisions. An independent
+review adds a perspective, and its findings still need evidence. Terra and Astra
+are outside automatic routing.
 
 Escalation requires evidence: an unresolved decision, contradictory observations,
 a verification gap, or repeated failure without new evidence. Cross-module work,
@@ -34,14 +38,20 @@ over decisions outside the execution contract.
 | --- | --- | --- |
 | `$luna-task` | One bounded task; no goal management | Luna only; primary handles difficult portions |
 | `$luna-goal-loop` | A substantial goal across cohesive assignments | Luna only; primary handles difficult portions |
-| `$worker-task` | One bounded task; no goal management | Luna by default, primary directly, optional Sol worker |
-| `$worker-goal-loop` | A substantial goal, routed per assignment | Luna by default, primary directly, optional Sol workers |
+| `$worker-task` | One bounded task; no goal management | Primary or selective Luna; Sol for independent execution |
+| `$worker-goal-loop` | A substantial goal, routed per assignment | Primary or selective Luna; Sol for independent execution |
 
 The Luna workflows preserve the explicit worker choice without requiring a
 workflow switch when the primary needs to help. The adaptive workflows choose
 whether delegation helps and which worker to use. An unavailable optional worker
 returns work to the primary; an explicitly requested unavailable Luna worker is
 reported without silently substituting another model.
+
+Activate adaptive workflows with `$worker-task`, `$worker-goal-loop`, or an
+explicit request to use the named skill. A generic "goal loop" uses the ordinary
+workflow. Discussing or editing a skill does not activate it. The adaptive skills
+disable implicit invocation in their metadata. Skills are enabled by default
+when installed; an existing local disable preference must be changed separately.
 
 Use one cohesive assignment and one writer by default. Reuse workers for related
 corrections, keep context compact, and transfer write ownership before taking
@@ -98,16 +108,19 @@ checksums; do not point a deployment at an unpublished checkout.
 ## Validation and tuning
 
 Run `scripts/check` after changing the kit. It validates the default and legacy
-inventory, agent model/effort selections, and skill metadata. It does not prove
+inventory, agent model/effort selections, skill metadata, and explicit-only
+adaptive invocation policies. It does not prove
 routing quality or runtime model availability.
 
 Review representative behavior as well:
 
-- A specified migration with useful acceptance checks stays with Luna.
-- An unclear failure can start with a bounded Luna investigation before edits.
-- A deeply coupled design decision returns to the primary, which may hand the
-  resulting implementation back to Luna.
-- A complex independent assignment can use Sol when its separate context helps.
+- A specified migration with clear boundaries and useful checks can suit Luna.
+- An unclear failure stays in the primary until a useful investigation can be
+  confidently assigned and verified.
+- A deeply coupled design decision stays in the primary, which may delegate
+  resulting implementation when the savings justify the handoff.
+- Separable parallel work or a noisy investigation can use Sol when another
+  execution context helps.
 - An ordinary failed test goes back for correction; repeated failure without new
   evidence returns to the primary.
 - An explicit Luna workflow never silently creates a Sol or Terra worker.
@@ -115,3 +128,11 @@ Review representative behavior as well:
 Compare total primary-plus-worker usage, corrections, elapsed time, and accepted
 results on representative tasks. Use runtime cost data when available; do not
 infer savings from the number of Luna assignments or from token rates alone.
+
+## Design notes
+
+[Worker routing design](docs/worker-routing-design.md) records selective Luna
+delegation, the separate purpose of Sol workers, and the rollout plan.
+[Worker routing research](docs/worker-routing-study.md) reviews the evidence,
+its limits, and a lightweight policy to assess in practice.
+The active workflow instructions above describe the current implementation.

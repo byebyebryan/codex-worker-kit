@@ -1,5 +1,5 @@
 name = "sol-xhigh"
-description = "GPT-6.1 Sol XHigh worker for a complex, self-contained investigation or implementation when separate context or independent parallel work helps; the primary retains decisions and acceptance."
+description = "GPT-6.1 Sol XHigh worker for separable parallel work, context-isolated investigation, or independent review with a concrete execution benefit; the primary retains decisions and acceptance."
 model = "gpt-6.1-sol"
 model_reasoning_effort = "xhigh"
 

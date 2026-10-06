@@ -1,13 +1,17 @@
 ---
 name: worker-task
-description: Complete one bounded investigation or implementation task with Luna by default, primary-agent handling of difficult portions, and an optional Sol worker when separate context helps. Use only when the user explicitly invokes $worker-task. The primary owns decisions and review; no goal management.
+description: Use only when the user invokes $worker-task or explicitly asks to use the worker-task skill. Complete one bounded task in the primary, selectively delegating clear, verifiable work to Luna. Sol workers need an independent execution benefit. Generic task or goal-loop requests and discussion of the skill do not activate it; no goal management.
 ---
 
 # Worker Task
 
+Activate only through `$worker-task` or an explicit request to use this named
+skill. Generic task or goal-loop requests and discussion or editing of the skill
+do not activate it.
+
 Keep the current primary responsible for decisions, integration, and acceptance;
-the intended setup is Sol XHigh with Luna Max workers. This skill does not change
-the primary model or create or manage a goal.
+the intended setup is Sol XHigh with selective Luna Max delegation. This skill
+does not change the primary model or create or manage a goal.
 
 ## Define and route the task
 
@@ -18,24 +22,32 @@ missing preference, product choice, or authorization that materially affects
 the work. Start implementation once intended behavior and invariants are settled;
 individual coding steps need not be predetermined.
 
-Choose the route with the lowest expected total cost of reaching an accepted
-result, including primary context, handoffs, review, and retries:
+Keep work in the primary when the benefit of delegation is uncertain. Delegate
+to `luna-max` when the objective, responsibility boundary, and acceptance check
+are clear, and expected savings justify packaging, review, and possible
+corrections. Confidence concerns the assignment and verification; Luna can
+choose implementation details or investigate a well-defined question without
+the primary solving it first.
 
-- **Luna by default:** use `luna-max` for a bounded assignment with a clear
-  outcome and practical verification. When facts are missing, delegate tracing,
-  reproduction, a focused investigation, or proposed options before editing.
-- **Primary directly:** keep architecture decisions and deeply coupled reasoning
-  in the primary. Handle a difficult portion there when it already has the
-  necessary context; return settled implementation to Luna when useful. A small
-  remainder may be cheaper to finish directly than to hand off again.
-- **Optional Sol worker:** use `sol-xhigh` for complex, self-contained work only
-  when separate context or independent parallel work has a concrete benefit.
-  Complexity alone does not require another Sol agent. State that benefit.
+Keep evolving diagnosis, shared decisions, and difficult portions in the primary.
+If preparing a handoff would do most of the work, or only a small remainder is
+left, finish directly. A substantial specified migration or focused investigation
+can still suit Luna. Complexity labels, file count, or unfamiliarity alone do
+not decide the route. Do not require an unsuccessful Luna attempt before using
+the primary, or impose a delegation quota.
 
-Migrations, concurrency, security, cross-module behavior, file count, or
-unfamiliarity alone do not rule out Luna. Use evidence of an unresolved decision,
-missing verification, or unsuccessful approach to assess the actual difficulty.
-Do not route automatically to Terra or Astra.
+## Use a Sol worker for independent execution
+
+Use `sol-xhigh` only when another execution context has a concrete benefit:
+separable parallel work, an investigation with large intermediate output that
+can be distilled, or an independent review. State that benefit and account for
+handoff and acceptance effort. Difficulty beyond Luna normally stays in the
+primary; another Sol worker is not a stronger model tier.
+
+Separate files may still share decisions. Establish independence before parallel
+writes, and require review findings to point to evidence rather than treating
+another same-model opinion as verification. Do not route automatically to Terra
+or Astra.
 
 Confirm a selected custom agent is available. If unavailable, disclose it and
 continue in the primary; do not silently select a different paid worker. State
@@ -69,7 +81,7 @@ for work already known to need it.
 Before changing write ownership, obtain the handoff or stop the current writer
 and inspect partial changes. Preserve useful work. A subsequent Sol assignment
 still requires a concrete benefit from separate context or independent work;
-avoid cycling between workers. Return clear remaining work to Luna when useful.
+avoid cycling between workers. Reassess clear remaining work for Luna when useful.
 
 ## Finish
 

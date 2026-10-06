@@ -18,6 +18,7 @@ SKILLS = (
     "worker-goal-loop",
 )
 LEGACY_SKILLS = ("terra-task", "terra-goal-loop")
+EXPLICIT_ADAPTIVE_SKILLS = {"worker-task", "worker-goal-loop"}
 AGENTS = {
     "agents/luna-max.toml": ("gpt-6-luna", "max"),
     "agents/sol-xhigh.toml": ("gpt-6.1-sol", "xhigh"),
@@ -27,6 +28,8 @@ EXPECTED_FILES = {
     "README.md",
     "LICENSE",
     "scripts/check",
+    "docs/worker-routing-design.md",
+    "docs/worker-routing-study.md",
     *AGENTS,
 }
 SKILL_PATHS = tuple(f"skills/{skill}" for skill in SKILLS) + tuple(
@@ -166,6 +169,23 @@ def check_skills() -> None:
             pattern = rf"^  {re.escape(field)}:\s*\S.*$"
             if not re.search(pattern, metadata_text, re.MULTILINE):
                 fail(f"skill metadata is missing interface.{field}: {metadata_name}")
+        prompt = re.search(r"^  default_prompt:\s*(.+)$", metadata_text, re.MULTILINE)
+        if not prompt or not re.search(
+            rf"\${re.escape(skill)}(?![a-z0-9-])", prompt.group(1)
+        ):
+            fail(f"default prompt must name ${skill}: {metadata_name}")
+        if skill in EXPLICIT_ADAPTIVE_SKILLS:
+            policy = re.search(
+                r"^policy:\s*\n((?:[ \t].*\n|[ \t]*\n)*)",
+                metadata_text + "\n",
+                re.MULTILINE,
+            )
+            if not policy or not re.search(
+                r"^  allow_implicit_invocation:[ \t]*false[ \t]*(?:#.*)?$",
+                policy.group(1),
+                re.MULTILINE,
+            ):
+                fail(f"adaptive skill must disable implicit invocation: {metadata_name}")
     print(
         f"[ok] skill frontmatter and metadata "
         f"({len(SKILLS)} default, {len(LEGACY_SKILLS)} legacy skills)"
